@@ -22,6 +22,16 @@ Please get from [秋月電子通商 akizukidenshi](http://akizukidenshi.com/cata
 GNUH8 v12.02 Tool Chain(Windows or Linux).  
 To download, you need the account registration.  
 
++ **My environment**  
+	* Windows 7 Home Premium(Service Pack 1)  
+		Compiler: KPIT GNUH8 v12.02 Tool Chain  
+		Unix Tools: Cygwin  
+		make: [Make for Windows](http://gnuwin32.sourceforge.net/packages/make.htm)  
+		(* I compiled make source codes by myself.)
+	* LinuxBean 14.04
+		Compiler: KPIT GNUH8 v12.02 Tool Chain  
+		(* To convert .rpm to .deb, use the "alien" command.)
+
 ##Future Plans
 + USB Driver(Mass strage class driver)
 + File system(FAT32)
