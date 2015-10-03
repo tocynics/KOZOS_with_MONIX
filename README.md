@@ -28,7 +28,7 @@ To download, you need the account registration.
 		Unix Tools: Cygwin  
 		make: [Make for Windows](http://gnuwin32.sourceforge.net/packages/make.htm)  
 		(* I compiled make source codes by myself.)
-	* LinuxBean 14.04
+	* LinuxBean 14.04  
 		Compiler: KPIT GNUH8 v12.02 Tool Chain  
 		(* To convert .rpm to .deb, use the "alien" command.)
 
