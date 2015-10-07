@@ -1,4 +1,4 @@
-# learning_kozos
+# KOZOS on MONIX
 learning KOZOS on MONIX(h8 monitor).  
 
 ##Description
