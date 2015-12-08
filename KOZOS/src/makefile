@@ -1,4 +1,4 @@
-#	makefile
+#	makefile 
 
 LD_PATH = "firmware/loader"
 OS_PATH = "firmware/os"
@@ -103,7 +103,7 @@ set_project		:
 	ctags -R
 	rm -f KOZOS.vimpj
 	touch KOZOS.vimpj
-	pwd > KOZOS.vimpj
+	cygpath -m `pwd` > KOZOS.vimpj
 
 
 # "include ./Makefile.in"

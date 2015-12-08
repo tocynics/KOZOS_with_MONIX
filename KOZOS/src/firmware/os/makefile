@@ -31,7 +31,7 @@ SRCS	+= ../../user/command.c
 # USB利用
 LDFLAGS	= -Wl,-Map,$(TARGET).map
 
-OBJS = $(addsuffix .o, $(basename $(realpath $(SRCS))))
+OBJS = $(addsuffix .o, $(basename $(shell cygpath -m $(realpath $(SRCS)))))
 
 ########## ターゲット部
 # makeコマンドでターゲットを指定しなかった場合
