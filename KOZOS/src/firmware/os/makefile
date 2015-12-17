@@ -2,10 +2,12 @@
 include ../inc.mak
 
 CFLAGS	+= -DKOZOS#		条件コンパイルのデファインでしょう
+CFLAGS	+= -Wno-attributes
 #CFLAGS	+= -D_20MHZ_CPU_#	H8/3069F LANボードで使用
 
 ##########	生成する実行形式のファイル名
 TARGET	= kozos
+TARGET_PATH	= kozos
 
 ##########	他のディレクトリ
 KZ_OS_COMMON_DIR	= ../common
@@ -23,14 +25,14 @@ SRCS	+= $(KZ_OS_COMMON_DIR)/serial.c
 SRCS	+= $(KZ_OS_COMMON_DIR)/interrupt.c
 SRCS	+= $(KZ_OS_COMMON_DIR)/dram.c
 SRCS	+= $(KZ_OS_COMMON_DIR)/memory.c
-#SRCS	+= $(KZ_OS_COMMON_DIR)/sl811hs.c
 SRCS	+= $(KZ_OS_COMMON_DIR)/sl811.c
-#SRCS	+= $(KZ_OS_COMMON_DIR)/usb.c
+SRCS	+= $(KZ_OS_COMMON_DIR)/usb.c
 
 SRCS	+= ../../user/command.c
 # USB利用
 LDFLAGS	= -Wl,-Map,$(TARGET).map
 
+#OBJS = $(addsuffix .o, $(basename $(shell cygpath -m $(realpath $(SRCS)))))
 OBJS = $(addsuffix .o, $(basename $(shell cygpath -m $(realpath $(SRCS)))))
 
 ########## ターゲット部

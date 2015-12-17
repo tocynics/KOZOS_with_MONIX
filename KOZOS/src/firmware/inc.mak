@@ -9,6 +9,8 @@
 ARCH	= h8300-elf
 ADDNAME	= $(ARCH)-
 
+HEADPATH = $(shell cygpath -m $(realpath ..))
+
 ###########	利用するツール類の指定
 AR		= $(ADDNAME)ar
 AS		= $(ADDNAME)as
@@ -28,8 +30,8 @@ CFLAGS	+= -nostdinc#		システムのヘッダファイルを利用しない(std
 CFLAGS	+= -nostdlib#		システムのライブラリを利用しない(stdlibなど?)
 CFLAGS	+= -fno-builtin #	コンパイラのビルトイン関数を利用しない
 CFLAGS	+= -I.#				ヘッダファイルの検索先を指定する
-CFLAGS	+= -I../include
-CFLAGS	+= -I../daemon
+CFLAGS	+= -I$(HEADPATH)/include
+CFLAGS	+= -I$(HEADPATH)/daemon
 #CFLAGS	+= -Os#				サイズ節約の最適化を行う
 CFLAGS	+= -D_H8_3069F_ARCH_
 #CFLAGS += -g#				デバッガを利用する

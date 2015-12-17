@@ -18,6 +18,7 @@
 #include	"serial.h"
 #include	"consdrv.h"
 #include	"lib.h"
+#include	"usb.h"
 
 /*****************************************************************************
 	定義
@@ -114,7 +115,7 @@ int command_main(int argc, char** argv)
 		}
 #if 1
 		else if(strncmp(pcBuf, "usb", 3) == TRUE){
-			usb_main();
+			usb_main(0,NULL);
 		}
 #endif
 		else if(pcBuf[0] == '\0'){

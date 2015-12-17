@@ -98,14 +98,6 @@ cleanup			:
 	cd $(MONIX_PATH); make clean
 	rm tags *.vimpj
 
-.PHONEY: set_project
-set_project		:
-	ctags -R
-	rm -f KOZOS.vimpj
-	touch KOZOS.vimpj
-	cygpath -m `pwd` > KOZOS.vimpj
-
-
 # "include ./Makefile.in"
 # 上記のように記述し、別途makefileを用意すれば、
 # makefileを分割して記述できる。
