@@ -1,6 +1,5 @@
 #
 *.swp
-*.exe
 *.o
 *tags
 *.vimpj
