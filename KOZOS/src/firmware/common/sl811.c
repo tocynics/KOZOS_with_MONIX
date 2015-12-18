@@ -2,7 +2,7 @@
 	オーダー	: sl811ドライバ
 	CPU			: H8 3069F
 	コンパイラ	: h8300-elf-gcc version 3.4.6
-	ファイル名	: sl8.c
+	ファイル名	: sl8ll.c
 	接頭辞		: static->sl8 API->sl811
 	作成日時	: 2015-12-18
 *****************************************************************************/
@@ -32,79 +32,79 @@
 #define PID_IN      0x90
 #define PID_OUT     0x10
 
-#define SL11H_HOSTCTLREG        0
-#define SL11H_BUFADDRREG        1
-#define SL11H_BUFLNTHREG        2
-#define SL11H_PKTSTATREG        3	/* read */
-#define SL11H_PIDEPREG          3	/* write */
-#define SL11H_XFERCNTREG        4	/* read */
-#define SL11H_DEVADDRREG        4	/* write */
-#define SL11H_CTLREG1           5
-#define SL11H_INTENBLREG        6
+#define SL8REG_HOST_CTL        0
+#define SL8REG_BUF_ADDR        1
+#define SL8REG_BUF_LEN        2
+#define SL8REG_PKT_STAT        3	/* read */
+#define SL8REG_PID_EP          3	/* write */
+#define SL8_XFERCNTREG        4	/* read */
+#define SL8_DEVADDRREG        4	/* write */
+#define SL8_CTLREG1           5
+#define SL8_INTENBLREG        6
 
-#define SL11H_HOSTCTLREG_B      8
-#define SL11H_BUFADDRREG_B      9
-#define SL11H_BUFLNTHREG_B      10
-#define SL11H_PKTSTATREG_B      11	/* read */
-#define SL11H_PIDEPREG_B        11	/* write */
-#define SL11H_XFERCNTREG_B      12	/* read */
-#define SL11H_DEVADDRREG_B      12	/* write */
+#define SL8REG_HOST_CTL_B      8
+#define SL8REG_BUF_ADDR_B      9
+#define SL8REG_BUF_LEN_B      10
+#define SL8REG_PKT_STAT_B      11	/* read */
+#define SL8REG_PID_EP_B        11	/* write */
+#define SL8_XFERCNTREG_B      12	/* read */
+#define SL8_DEVADDRREG_B      12	/* write */
 
-#define SL11H_INTSTATREG        13	/* write clears bitwise */
-#define SL11H_HWREVREG          14	/* read */
-#define SL11H_SOFLOWREG         14	/* write */
-#define SL11H_SOFTMRREG         15	/* read */
-#define SL11H_CTLREG2           15	/* write */
-#define SL11H_DATA_START        16
+#define SL8_INTSTATREG        13	/* write clears bitwise */
+#define SL8_HWREVREG          14	/* read */
+#define SL8_SOFLOWREG         14	/* write */
+#define SL8_SOFTMRREG         15	/* read */
+#define SL8_CTLREG2           15	/* write */
+#define SL8_DATA_START        16
 
 /* Host control register bits (addr 0) */
 
-#define SL11H_HCTLMASK_ARM      1
-#define SL11H_HCTLMASK_ENBLEP   2
-#define SL11H_HCTLMASK_WRITE    4
-#define SL11H_HCTLMASK_ISOCH    0x10
-#define SL11H_HCTLMASK_AFTERSOF 0x20
-#define SL11H_HCTLMASK_SEQ      0x40
-#define SL11H_HCTLMASK_PREAMBLE 0x80
+#define SL8_HCTLMASK_ARM      1
+#define SL8_HCTLMASK_ENBLEP   2
+#define SL8_HCTLMASK_WRITE    4
+#define SL8_HCTLMASK_ISOCH    0x10
+#define SL8_HCTLMASK_AFTERSOF 0x20
+#define SL8_HCTLMASK_SEQ      0x40
+#define SL8_HCTLMASK_PREAMBLE 0x80
 
 /* Packet status register bits (addr 3) */
 
-#define SL11H_STATMASK_ACK      1
-#define SL11H_STATMASK_ERROR    2
-#define SL11H_STATMASK_TMOUT    4
-#define SL11H_STATMASK_SEQ      8
-#define SL11H_STATMASK_SETUP    0x10
-#define SL11H_STATMASK_OVF      0x20
-#define SL11H_STATMASK_NAK      0x40
-#define SL11H_STATMASK_STALL    0x80
+#define SL8_STATMASK_ACK      1
+#define SL8_STATMASK_ERROR    2
+#define SL8_STATMASK_TMOUT    4
+#define SL8_STATMASK_SEQ      8
+#define SL8_STATMASK_SETUP    0x10
+#define SL8_STATMASK_OVF      0x20
+#define SL8_STATMASK_NAK      0x40
+#define SL8_STATMASK_STALL    0x80
 
 /* Control register 1 bits (addr 5) */
-#define SL11H_CTL1MASK_DSBLSOF  1
-#define SL11H_CTL1MASK_NOTXEOF2 4
-#define SL11H_CTL1MASK_DSTATE   0x18
-#define SL11H_CTL1MASK_NSPD     0x20
-#define SL11H_CTL1MASK_SUSPEND  0x40
-#define SL11H_CTL1MASK_CLK12    0x80
+#define SL8_CTL1MASK_DSBLSOF  1
+#define SL8_CTL1MASK_NOTXEOF2 4
+#define SL8_CTL1MASK_DSTATE   0x18
+#define SL8_CTL1MASK_NSPD     0x20
+#define SL8_CTL1MASK_SUSPEND  0x40
+#define SL8_CTL1MASK_CLK12    0x80
 
-#define SL11H_CTL1VAL_RESET     8
+#define SL8_CTL1VAL_RESET     8
 
 /* Interrut enable (addr 6) and interrupt status register bits (addr 0xD) */
 
-#define SL11H_INTMASK_XFERDONE  1
-#define SL11H_INTMASK_SOFINTR   0x10
-#define SL11H_INTMASK_INSRMV    0x20
-#define SL11H_INTMASK_USBRESET  0x40
-#define SL11H_INTMASK_DSTATE    0x80	/* only in status reg */
+#define SL8_INTMASK_XFERDONE  1
+#define SL8_INTMASK_SOFINTR   0x10
+#define SL8_INTMASK_INSRMV    0x20
+#define SL8_INTMASK_USBRESET  0x40
+#define SL8_INTMASK_DSTATE    0x80	/* only in status reg */
 
 /* HW rev and SOF lo register bits (addr 0xE) */
 
-#define SL11H_HWRMASK_HWREV     0xF0
+#define SL8_HWRMASK_HWREV     0xF0
 
 /* SOF counter and control reg 2 (addr 0xF) */
 
-#define SL11H_CTL2MASK_SOFHI    0x3F
-#define SL11H_CTL2MASK_DSWAP    0x40
-#define SL11H_CTL2MASK_HOSTMODE 0xae
+#define SL8_CTL2MASK_SOFHI    0x3F
+#define SL8_CTL2MASK_DSWAP    0x40
+#define SL8_CTL2MASK_HOSTMODE 0xae
 
 /*****************************************************************************
 	型定義、構造体定義
@@ -257,50 +257,50 @@ static int sl8Reset(void)
 {
 	int	iStat;
 	
-	sl8Write(SL11H_CTLREG2, 0xae);
-	sl8Write(SL11H_CTLREG1, 0x08);	// reset USB
+	sl8Write(SL8_CTLREG2, 0xae);
+	sl8Write(SL8_CTLREG1, 0x08);	// reset USB
 	waitms(20);				// 20ms
-	sl8Write(SL11H_CTLREG1, 0);	// remove SE0
+	sl8Write(SL8_CTLREG1, 0);	// remove SE0
 
 	for(iStat = 0; iStat < 100; iStat++){
-		sl8Write(SL11H_INTSTATREG, 0xff); // clear all interrupt bits
+		sl8Write(SL8_INTSTATREG, 0xff); // clear all interrupt bits
 	}
-	iStat = sl8Read(SL11H_INTSTATREG);
+	iStat = sl8Read(SL8_INTSTATREG);
 	if(iStat & 0x40){  // Check if device is removed
 		s_sl8.speed = 0;	// None
-		sl8Write(SL11H_INTENBLREG, SL11H_INTMASK_XFERDONE | 
-			   SL11H_INTMASK_SOFINTR | SL11H_INTMASK_INSRMV);
+		sl8Write(SL8_INTENBLREG, SL8_INTMASK_XFERDONE | 
+			   SL8_INTMASK_SOFINTR | SL8_INTMASK_INSRMV);
 		return -1;
 	}
 
-	sl8Write(SL11H_BUFLNTHREG_B, 0);	//zero lenth
-	sl8Write(SL11H_PIDEPREG_B, 0x50);	//send SOF to EP0
-	sl8Write(SL11H_DEVADDRREG_B, 0x01);	//address0
-	sl8Write(SL11H_SOFLOWREG, 0xe0);
+	sl8Write(SL8REG_BUF_LEN_B, 0);	//zero lenth
+	sl8Write(SL8REG_PID_EP_B, 0x50);	//send SOF to EP0
+	sl8Write(SL8_DEVADDRREG_B, 0x01);	//address0
+	sl8Write(SL8_SOFLOWREG, 0xe0);
 
 	if(!(iStat & 0x80)){
 		s_sl8.speed = USB_LOW;	// Low
-		sl8Write(SL11H_CTLREG1, 0x8);
+		sl8Write(SL8_CTLREG1, 0x8);
 		waitms(20);
-		sl8Write(SL11H_SOFTMRREG, 0xee);
-		sl8Write(SL11H_CTLREG1, 0x21);
-		sl8Write(SL11H_HOSTCTLREG_B, 0x01);
+		sl8Write(SL8_SOFTMRREG, 0xee);
+		sl8Write(SL8_CTLREG1, 0x21);
+		sl8Write(SL8REG_HOST_CTL_B, 0x01);
 		for(iStat = 0; iStat < 20; iStat++){
-			sl8Write(SL11H_INTSTATREG, 0xff);
+			sl8Write(SL8_INTSTATREG, 0xff);
 		}
 	}
 	else{
 		s_sl8.speed = USB_FULL;	// Full
-		sl8Write(SL11H_CTLREG1, 0x8);
+		sl8Write(SL8_CTLREG1, 0x8);
 		waitms(20);
-		sl8Write(SL11H_SOFTMRREG, 0xae);
-		sl8Write(SL11H_CTLREG1, 0x01 );
-		sl8Write(SL11H_HOSTCTLREG_B, 0x01);
-		sl8Write(SL11H_INTSTATREG, 0xff);
+		sl8Write(SL8_SOFTMRREG, 0xae);
+		sl8Write(SL8_CTLREG1, 0x01 );
+		sl8Write(SL8REG_HOST_CTL_B, 0x01);
+		sl8Write(SL8_INTSTATREG, 0xff);
 	}
 
-	sl8Write(SL11H_INTENBLREG, SL11H_INTMASK_XFERDONE | 
-		   SL11H_INTMASK_SOFINTR|SL11H_INTMASK_INSRMV);
+	sl8Write(SL8_INTENBLREG, SL8_INTMASK_XFERDONE | 
+		   SL8_INTMASK_SOFINTR|SL8_INTMASK_INSRMV);
 	return 0;
 }
 
@@ -317,27 +317,27 @@ static int write_setup(char* pcBuf)
 	char	cPktStat;
 
 	sl8BufWrite(0x10, pcBuf, 8);
-	sl8Write(SL11H_BUFADDRREG, 0x10);
-	sl8Write(SL11H_BUFLNTHREG, 8);
-	sl8Write(SL11H_DEVADDRREG, s_sl8.addr);
-	sl8Write(SL11H_PIDEPREG, PID_SETUP);
-	sl8Write(SL11H_HOSTCTLREG, DATA0_WR);
+	sl8Write(SL8REG_BUF_ADDR, 0x10);
+	sl8Write(SL8REG_BUF_LEN, 8);
+	sl8Write(SL8_DEVADDRREG, s_sl8.addr);
+	sl8Write(SL8REG_PID_EP, PID_SETUP);
+	sl8Write(SL8REG_HOST_CTL, DATA0_WR);
 	waitus(200);
-	while((sl8Read(SL11H_INTSTATREG) & SL11H_INTMASK_XFERDONE) == 0){
+	while((sl8Read(SL8_INTSTATREG) & SL8_INTMASK_XFERDONE) == 0){
 		//do nothing
 	}
 
-	cPktStat = sl8Read(SL11H_PKTSTATREG);
+	cPktStat = sl8Read(SL8REG_PKT_STAT);
 
 	iRet = 0;
 
-	if(cPktStat & SL11H_STATMASK_ACK){
+	if(cPktStat & SL8_STATMASK_ACK){
 		iRet |= USB_ACK;
 	}
-	if(cPktStat & SL11H_STATMASK_NAK){
+	if(cPktStat & SL8_STATMASK_NAK){
 		iRet |= USB_NAK;
 	}
-	if(cPktStat & SL11H_STATMASK_STALL){
+	if(cPktStat & SL8_STATMASK_STALL){
 		iRet |= USB_STALL;
 	}
 	return iRet;
@@ -380,25 +380,25 @@ int write_sl811(int num, char* pcBuf, int iSize)
 		return 0;
 	}
 	sl8BufWrite(0x10, &pcBuf[USB_HDRSIZ], iSize - USB_HDRSIZ);
-	sl8Write(SL11H_BUFADDRREG, 0x10);
-	sl8Write(SL11H_BUFLNTHREG, iSize - USB_HDRSIZ);
-	sl8Write(SL11H_DEVADDRREG, s_sl8.addr);
-	sl8Write(SL11H_PIDEPREG, PID_OUT | pcBuf[USB_EP]);
-	sl8Write(SL11H_HOSTCTLREG, (pcBuf[USB_TOGGLE] == 0) ? DATA0_WR : DATA1_WR);
+	sl8Write(SL8REG_BUF_ADDR, 0x10);
+	sl8Write(SL8REG_BUF_LEN, iSize - USB_HDRSIZ);
+	sl8Write(SL8_DEVADDRREG, s_sl8.addr);
+	sl8Write(SL8REG_PID_EP, PID_OUT | pcBuf[USB_EP]);
+	sl8Write(SL8REG_HOST_CTL, (pcBuf[USB_TOGGLE] == 0) ? DATA0_WR : DATA1_WR);
 	waitus(200);
-	while((sl8Read(SL11H_INTSTATREG) & SL11H_INTMASK_XFERDONE) == 0){
+	while((sl8Read(SL8_INTSTATREG) & SL8_INTMASK_XFERDONE) == 0){
 		//do nothing
 	}
-	cPktStat = sl8Read(SL11H_PKTSTATREG);
+	cPktStat = sl8Read(SL8REG_PKT_STAT);
 	iRet = 0;
 
-	if(cPktStat & SL11H_STATMASK_ACK){
+	if(cPktStat & SL8_STATMASK_ACK){
 		iRet |= USB_ACK;
 	}
-	if(cPktStat & SL11H_STATMASK_NAK){
+	if(cPktStat & SL8_STATMASK_NAK){
 		iRet |= USB_NAK;
 	}
-	if(cPktStat & SL11H_STATMASK_STALL){
+	if(cPktStat & SL8_STATMASK_STALL){
 		iRet |= USB_STALL;
 	}
 	return iRet;
@@ -420,36 +420,36 @@ int read_sl811(int num, char* pcBuf, int iSize)
 	if(iSize < 0){
 		return 0;
 	}
-	sl8Write(SL11H_BUFADDRREG, 0x10);
-	sl8Write(SL11H_BUFLNTHREG, iSize);
-	sl8Write(SL11H_DEVADDRREG, s_sl8.addr);
-	sl8Write(SL11H_PIDEPREG, PID_IN | pcBuf[USB_EP]);
+	sl8Write(SL8REG_BUF_ADDR, 0x10);
+	sl8Write(SL8REG_BUF_LEN, iSize);
+	sl8Write(SL8_DEVADDRREG, s_sl8.addr);
+	sl8Write(SL8REG_PID_EP, PID_IN | pcBuf[USB_EP]);
 
 	for(timovr = 0;timovr < 200;timovr++){
-		sl8Write(SL11H_HOSTCTLREG, (pcBuf[USB_TOGGLE] == 0) ? DATA0_RD : DATA1_RD);
+		sl8Write(SL8REG_HOST_CTL, (pcBuf[USB_TOGGLE] == 0) ? DATA0_RD : DATA1_RD);
 		waitus(200);
 
-		while((sl8Read(SL11H_INTSTATREG) & SL11H_INTMASK_XFERDONE) == 0){
+		while((sl8Read(SL8_INTSTATREG) & SL8_INTMASK_XFERDONE) == 0){
 			//do nothing
 		}
 
-		cPktStat= sl8Read(SL11H_PKTSTATREG);
-		if(!(cPktStat & SL11H_STATMASK_NAK)){
+		cPktStat= sl8Read(SL8REG_PKT_STAT);
+		if(!(cPktStat & SL8_STATMASK_NAK)){
 			break;
 		}
 	}
 
-	if(cPktStat & SL11H_STATMASK_ACK){
+	if(cPktStat & SL8_STATMASK_ACK){
 		sl8BufRead(0x10, pcBuf, iSize);
 	}
 	iRet = 0;
-	if(cPktStat & SL11H_STATMASK_ACK){
+	if(cPktStat & SL8_STATMASK_ACK){
 		iRet |= USB_ACK;
 	}
-	if(cPktStat & SL11H_STATMASK_NAK){
+	if(cPktStat & SL8_STATMASK_NAK){
 		iRet |= USB_NAK;
 	}
-	if(cPktStat & SL11H_STATMASK_STALL){
+	if(cPktStat & SL8_STATMASK_STALL){
 		iRet |= USB_STALL;
 	}
 	return iRet;
