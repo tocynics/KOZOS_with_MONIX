@@ -77,6 +77,7 @@ $(TARGET).mot	: $(TARGET)
 # イメージファイル作成ルール
 .PHONY:	image
 image			: $(TARGET).mot
+	cp $(TARGET).mot ../../bin
 
 # フォルダの掃除
 .PHONY:	clean

@@ -4,7 +4,7 @@
 	コンパイラ	: h8300-elf-gcc version 3.4.6
 	ファイル名	: sl8.c
 	接頭辞		: static->sl8 API->sl811
-	作成日時	: 2014-06-26
+	作成日時	: 2015-12-18
 *****************************************************************************/
 /*
 	改訂履歴
@@ -109,7 +109,7 @@
 /*****************************************************************************
 	型定義、構造体定義
 *****************************************************************************/
-typedef struct {
+typedef struct{
 	volatile char	*addr_reg;
 	volatile char	*data_reg;
 	char			speed;
@@ -124,153 +124,182 @@ typedef struct {
 /*****************************************************************************
 	内部変数
 *****************************************************************************/
-static SL811Info sl811[SL_NUM];
+static SL811Info s_sl8;
 
 /*****************************************************************************
 	プロトタイプ宣言
 *****************************************************************************/
-static char sl8Read(int num, char offset);
-static void sl8Write(int num, char offset, char data);
-static void sl8BufRead(int num, short offset, char* buf, short size);
-static void sl8BufWrite(int num, short offset, char* buf, short size);
-static int regTest(int num);
-static int USBReset(int num);
-static int write_setup(int num, char* data);
+static char sl8Read(char cOffset);
+static void sl8Write(char cOffset, char cBuf);
+static void sl8BufRead(char cOffset, char* buf, char cSize);
+static void sl8BufWrite(char cOffset, char* buf, char cSize);
+static int sl8RegTest(void);
+static int sl8Reset(void);
+static int write_setup(char* pcBuf);
 
 /*****************************************************************************
 	テーブル
 *****************************************************************************/
 
 /*****************************************************************************
-	DISCRIPTION	: T.B.D.
-	ARGUMENT	: T.B.D.
-	RETURN		: -
+	DISCRIPTION	: sl811の1バイト読み込み
+	ARGUMENT	: cOffset = sl811レジスタオフセット
+	RETURN		: 読み取りデータ1バイト
 	NOTE		: -
-	UPDATED		: 2014-06-26
+	UPDATED		: 2015-12-18
 *****************************************************************************/
-static char sl8Read(int num, char offset) {
-	char data;
-
-	*(sl811[num].addr_reg) = offset;
-	data = *(sl811[num].data_reg);
-	return data;
+static char sl8Read(char cOffset)
+{
+	*(s_sl8.addr_reg) = cOffset;
+	return *(s_sl8.data_reg);
 }
 
 /*****************************************************************************
-	DISCRIPTION	: T.B.D.
-	ARGUMENT	: T.B.D.
+	DISCRIPTION	: sl811の1バイト書き込み
+	ARGUMENT	: cOffset = sl811レジスタオフセット
+				: cBuf = 書き込むデータ
 	RETURN		: -
 	NOTE		: -
-	UPDATED		: 2014-06-26
+	UPDATED		: 2015-12-18
 *****************************************************************************/
-static void sl8Write(int num, char offset, char data){
-	*(sl811[num].addr_reg) = offset;
-	*(sl811[num].data_reg) = data;
+static void sl8Write(char cOffset, char cBuf)
+{
+	*(s_sl8.addr_reg) = cOffset;
+	*(s_sl8.data_reg) = cBuf;
+
+	return;
 }
 
 /*****************************************************************************
-	DISCRIPTION	: T.B.D.
-	ARGUMENT	: T.B.D.
+	DISCRIPTION	: sl811のバッファ読み込み
+	ARGUMENT	: cOffset = sl811レジスタオフセット
+				: pcBuf = 読み出しデータ
+				: cSize = 読み出しサイズ
 	RETURN		: -
 	NOTE		: -
-	UPDATED		: 2014-06-26
+	UPDATED		: 2015-12-18
 *****************************************************************************/
-static void sl8BufRead(int num, short offset, char* buf, short size){
-	if(size <= 0) return;
-	*(sl811[num].addr_reg) = (char)offset;
-	while(size--) *buf++ = *(sl811[num].data_reg);
-}
+static void sl8BufRead(char cOffset, char* pcBuf, char cSize)
+{
+	int i;
 
-/*****************************************************************************
-	DISCRIPTION	: T.B.D.
-	ARGUMENT	: T.B.D.
-	RETURN		: -
-	NOTE		: -
-	UPDATED		: 2014-06-26
-*****************************************************************************/
-static void sl8BufWrite(int num, short offset, char* buf, short size) {
-	if(size <= 0) return;
-	*(sl811[num].addr_reg) = (char)offset;
-	while(size--) {
-		*(sl811[num].data_reg) = *buf;
-		buf++;
+	*(s_sl8.addr_reg) = cOffset;
+
+	for(i = 0; i < cSize; i++, pcBuf++){
+		*pcBuf = *(s_sl8.data_reg);
 	}
+
+	return;
 }
 
 /*****************************************************************************
-	DISCRIPTION	: T.B.D.
-	ARGUMENT	: T.B.D.
+	DISCRIPTION	: sl811のバッファ書き込み
+	ARGUMENT	: cOffset = sl811レジスタオフセット
+				: pcBuf = 書き込みデータ
+				: cSize = 書き込みサイズ
 	RETURN		: -
 	NOTE		: -
-	UPDATED		: 2014-06-26
+	UPDATED		: 2015-12-18
 *****************************************************************************/
-static int regTest(int num){
-	int	i, data, result = 0;
-	char	buf[256];
+static void sl8BufWrite(char cOffset, char* pcBuf, char cSize)
+{
+	int i;
 
-	for(i = 16;i < 256; i++) {
-		buf[i] = (char)sl8Read(num, i);
-		sl8Write(num, i, i);
+	*(s_sl8.addr_reg) = cOffset;
+	for(i = 0; i < cSize; i++, pcBuf++){
+		*(s_sl8.data_reg) = *pcBuf;
 	}
-	for(i = 16;i < 256; i++) {
-		data = sl8Read(num, i);
-		if(data != i) {
-			result = -1;
+
+	return;
+}
+
+/*****************************************************************************
+	DISCRIPTION	: sl811レジスタテスト
+	ARGUMENT	: -
+	RETURN		: (-1) = 異常終了(レジスタなし)
+				: 0 = 正常終了
+	NOTE		: -
+	UPDATED		: 2015-12-18
+*****************************************************************************/
+static int sl8RegTest(void)
+{
+	int		i, iRet = 0;
+	char	cData;
+	char	cBuf[256];
+
+	for(i = 16;i < 256; i++){
+		cBuf[i] = sl8Read(i);
+		sl8Write(i, i);
+	}
+
+	for(i = 16;i < 256; i++){
+		cData = sl8Read(i);
+		if(cData != i){
+			iRet = -1;
 		}
 	}
-	for(i = 16;i < 256;i++) sl8Write(num, i, buf[i]);
-	return result;
+
+	for(i = 16; i < 256; i++){
+		sl8Write(i, cBuf[i]);
+	}
+	return iRet;
 }
 
 /*****************************************************************************
-	DISCRIPTION	: T.B.D.
-	ARGUMENT	: T.B.D.
-	RETURN		: -
+	DISCRIPTION	: sl811リセット
+	ARGUMENT	: -
+	RETURN		: -1 = 異常終了
+				: 0 = 正常終了
 	NOTE		: -
-	UPDATED		: 2014-06-26
+	UPDATED		: 2015-12-18
 *****************************************************************************/
-static int USBReset(int num) {
-	int	status;
-
-	sl8Write(num, SL11H_CTLREG2, 0xae);
-	sl8Write(num, SL11H_CTLREG1, 0x08);	// reset USB
+static int sl8Reset(void)
+{
+	int	iStat;
+	
+	sl8Write(SL11H_CTLREG2, 0xae);
+	sl8Write(SL11H_CTLREG1, 0x08);	// reset USB
 	waitms(20);				// 20ms
-	sl8Write(num, SL11H_CTLREG1, 0);	// remove SE0
+	sl8Write(SL11H_CTLREG1, 0);	// remove SE0
 
-	for(status = 0;status < 100;status++) {
-		sl8Write(num, SL11H_INTSTATREG, 0xff); // clear all interrupt bits
+	for(iStat = 0; iStat < 100; iStat++){
+		sl8Write(SL11H_INTSTATREG, 0xff); // clear all interrupt bits
 	}
-	status = sl8Read(num, SL11H_INTSTATREG);
-	if(status & 0x40){  // Check if device is removed
-		sl811[num].speed = 0;	// None
-		sl8Write(num, SL11H_INTENBLREG, SL11H_INTMASK_XFERDONE | 
+	iStat = sl8Read(SL11H_INTSTATREG);
+	if(iStat & 0x40){  // Check if device is removed
+		s_sl8.speed = 0;	// None
+		sl8Write(SL11H_INTENBLREG, SL11H_INTMASK_XFERDONE | 
 			   SL11H_INTMASK_SOFINTR | SL11H_INTMASK_INSRMV);
 		return -1;
 	}
-	sl8Write(num, SL11H_BUFLNTHREG_B, 0);	//zero lenth
-	sl8Write(num, SL11H_PIDEPREG_B, 0x50);	//send SOF to EP0
-	sl8Write(num, SL11H_DEVADDRREG_B, 0x01);	//address0
-	sl8Write(num, SL11H_SOFLOWREG, 0xe0);
-	if(!(status & 0x80)) {
-		sl811[num].speed = USB_LOW;	// Low
-		sl8Write(num, SL11H_CTLREG1, 0x8);
+
+	sl8Write(SL11H_BUFLNTHREG_B, 0);	//zero lenth
+	sl8Write(SL11H_PIDEPREG_B, 0x50);	//send SOF to EP0
+	sl8Write(SL11H_DEVADDRREG_B, 0x01);	//address0
+	sl8Write(SL11H_SOFLOWREG, 0xe0);
+
+	if(!(iStat & 0x80)){
+		s_sl8.speed = USB_LOW;	// Low
+		sl8Write(SL11H_CTLREG1, 0x8);
 		waitms(20);
-		sl8Write(num, SL11H_SOFTMRREG, 0xee);
-		sl8Write(num, SL11H_CTLREG1, 0x21);
-		sl8Write(num, SL11H_HOSTCTLREG_B, 0x01);
-		for(status = 0;status < 20;status++) {
-			sl8Write(num, SL11H_INTSTATREG, 0xff);
+		sl8Write(SL11H_SOFTMRREG, 0xee);
+		sl8Write(SL11H_CTLREG1, 0x21);
+		sl8Write(SL11H_HOSTCTLREG_B, 0x01);
+		for(iStat = 0; iStat < 20; iStat++){
+			sl8Write(SL11H_INTSTATREG, 0xff);
 		}
-	} else {
-		sl811[num].speed = USB_FULL;	// Full
-		sl8Write(num, SL11H_CTLREG1, 0x8);
-		waitms(20);
-		sl8Write(num, SL11H_SOFTMRREG, 0xae);
-		sl8Write(num, SL11H_CTLREG1, 0x01 );
-		sl8Write(num, SL11H_HOSTCTLREG_B, 0x01);
-		sl8Write(num, SL11H_INTSTATREG, 0xff);
 	}
-	sl8Write(num, SL11H_INTENBLREG, SL11H_INTMASK_XFERDONE | 
+	else{
+		s_sl8.speed = USB_FULL;	// Full
+		sl8Write(SL11H_CTLREG1, 0x8);
+		waitms(20);
+		sl8Write(SL11H_SOFTMRREG, 0xae);
+		sl8Write(SL11H_CTLREG1, 0x01 );
+		sl8Write(SL11H_HOSTCTLREG_B, 0x01);
+		sl8Write(SL11H_INTSTATREG, 0xff);
+	}
+
+	sl8Write(SL11H_INTENBLREG, SL11H_INTMASK_XFERDONE | 
 		   SL11H_INTMASK_SOFINTR|SL11H_INTMASK_INSRMV);
 	return 0;
 }
@@ -280,48 +309,59 @@ static int USBReset(int num) {
 	ARGUMENT	: T.B.D.
 	RETURN		: -
 	NOTE		: -
-	UPDATED		: 2014-06-26
+	UPDATED		: 2015-12-18
 *****************************************************************************/
-static int write_setup(int num, char* data) {
-	char	pktstat, ret;
+static int write_setup(char* pcBuf)
+{
+	int		iRet;
+	char	cPktStat;
 
-	sl8BufWrite(num, 0x10, data, 8);
-	sl8Write(num, SL11H_BUFADDRREG, 0x10);
-	sl8Write(num, SL11H_BUFLNTHREG, 8);
-	sl8Write(num, SL11H_DEVADDRREG, sl811[num].addr);
-	sl8Write(num, SL11H_PIDEPREG, PID_SETUP);
-	sl8Write(num, SL11H_HOSTCTLREG, DATA0_WR);
+	sl8BufWrite(0x10, pcBuf, 8);
+	sl8Write(SL11H_BUFADDRREG, 0x10);
+	sl8Write(SL11H_BUFLNTHREG, 8);
+	sl8Write(SL11H_DEVADDRREG, s_sl8.addr);
+	sl8Write(SL11H_PIDEPREG, PID_SETUP);
+	sl8Write(SL11H_HOSTCTLREG, DATA0_WR);
 	waitus(200);
-	while((sl8Read(num, SL11H_INTSTATREG) & SL11H_INTMASK_XFERDONE) == 0);
-	pktstat = sl8Read(num, SL11H_PKTSTATREG);
-	ret = 0;
-	if(pktstat & SL11H_STATMASK_ACK) ret |= USB_ACK;
-	if(pktstat & SL11H_STATMASK_NAK) ret |= USB_NAK;
-	if(pktstat & SL11H_STATMASK_STALL) ret |= USB_STALL;
-	return ret;
+	while((sl8Read(SL11H_INTSTATREG) & SL11H_INTMASK_XFERDONE) == 0){
+		//do nothing
+	}
+
+	cPktStat = sl8Read(SL11H_PKTSTATREG);
+
+	iRet = 0;
+
+	if(cPktStat & SL11H_STATMASK_ACK){
+		iRet |= USB_ACK;
+	}
+	if(cPktStat & SL11H_STATMASK_NAK){
+		iRet |= USB_NAK;
+	}
+	if(cPktStat & SL11H_STATMASK_STALL){
+		iRet |= USB_STALL;
+	}
+	return iRet;
 }
 
 /*****************************************************************************
-	DISCRIPTION	: T.B.D.
-	ARGUMENT	: T.B.D.
+	DISCRIPTION	: sl811初期化
+	ARGUMENT	: -
 	RETURN		: -
 	NOTE		: -
-	UPDATED		: 2014-06-26
+	UPDATED		: 2015-12-18
 *****************************************************************************/
-int sl811Init(void) {
-	int num;
-
+int sl811Init(void)
+{
 	P1DDR = 0xff;	/* A0-7    is enable */
 	P2DDR = 0xff;	/* A8-15   is enable */
 	P5DDR = 0x01;	/* A16     is enable */
 	P8DDR = 0x0e;	/* CS1-3 is enable */
 
-	num = 0;
-	sl811[num].addr_reg = (volatile char *)0x200001;
-	sl811[num].data_reg = (volatile char *)0x200003;
-	sl811[num].addr = 0;
+	s_sl8.addr_reg = (volatile char *)0x200001;
+	s_sl8.data_reg = (volatile char *)0x200003;
+	s_sl8.addr = 0;
 
-	return regTest(num);
+	return sl8RegTest();
 }
 
 /*****************************************************************************
@@ -329,26 +369,39 @@ int sl811Init(void) {
 	ARGUMENT	: T.B.D.
 	RETURN		: -
 	NOTE		: sl8Sendにする。
-	UPDATED		: 2014-06-26
+	UPDATED		: 2015-12-18
 *****************************************************************************/
-int write_sl811(int num, char* data, int size) {
-	char	pktstat, ret;
+int write_sl811(int num, char* pcBuf, int iSize)
+{
+	int		iRet;
+	char	cPktStat;
 
-	if(size < USB_HDRSIZ) return 0;
-	sl8BufWrite(num, 0x10, &data[USB_HDRSIZ], size - USB_HDRSIZ);
-	sl8Write(num, SL11H_BUFADDRREG, 0x10);
-	sl8Write(num, SL11H_BUFLNTHREG, size - USB_HDRSIZ);
-	sl8Write(num, SL11H_DEVADDRREG, sl811[num].addr);
-	sl8Write(num, SL11H_PIDEPREG, PID_OUT | data[USB_EP]);
-	sl8Write(num, SL11H_HOSTCTLREG, (data[USB_TOGGLE] == 0) ? DATA0_WR : DATA1_WR);
+	if(iSize < USB_HDRSIZ){
+		return 0;
+	}
+	sl8BufWrite(0x10, &pcBuf[USB_HDRSIZ], iSize - USB_HDRSIZ);
+	sl8Write(SL11H_BUFADDRREG, 0x10);
+	sl8Write(SL11H_BUFLNTHREG, iSize - USB_HDRSIZ);
+	sl8Write(SL11H_DEVADDRREG, s_sl8.addr);
+	sl8Write(SL11H_PIDEPREG, PID_OUT | pcBuf[USB_EP]);
+	sl8Write(SL11H_HOSTCTLREG, (pcBuf[USB_TOGGLE] == 0) ? DATA0_WR : DATA1_WR);
 	waitus(200);
-	while((sl8Read(num, SL11H_INTSTATREG) & SL11H_INTMASK_XFERDONE) == 0);
-	pktstat = sl8Read(num, SL11H_PKTSTATREG);
-	ret = 0;
-	if(pktstat & SL11H_STATMASK_ACK) ret |= USB_ACK;
-	if(pktstat & SL11H_STATMASK_NAK) ret |= USB_NAK;
-	if(pktstat & SL11H_STATMASK_STALL) ret |= USB_STALL;
-	return ret;
+	while((sl8Read(SL11H_INTSTATREG) & SL11H_INTMASK_XFERDONE) == 0){
+		//do nothing
+	}
+	cPktStat = sl8Read(SL11H_PKTSTATREG);
+	iRet = 0;
+
+	if(cPktStat & SL11H_STATMASK_ACK){
+		iRet |= USB_ACK;
+	}
+	if(cPktStat & SL11H_STATMASK_NAK){
+		iRet |= USB_NAK;
+	}
+	if(cPktStat & SL11H_STATMASK_STALL){
+		iRet |= USB_STALL;
+	}
+	return iRet;
 }
 
 /*****************************************************************************
@@ -356,30 +409,50 @@ int write_sl811(int num, char* data, int size) {
 	ARGUMENT	: T.B.D.
 	RETURN		: -
 	NOTE		: sl8Recvにする。
-	UPDATED		: 2014-06-26
+	UPDATED		: 2015-12-18
 *****************************************************************************/
-int read_sl811(int num, char* data, int size) {
-	char	pktstat, ret;
+int read_sl811(int num, char* pcBuf, int iSize)
+{
+	int		iRet;
+	char	cPktStat;
 	int	timovr;
 
-	if(size < 0) return 0;
-	sl8Write(num, SL11H_BUFADDRREG, 0x10);
-	sl8Write(num, SL11H_BUFLNTHREG, size);
-	sl8Write(num, SL11H_DEVADDRREG, sl811[num].addr);
-	sl8Write(num, SL11H_PIDEPREG, PID_IN | data[USB_EP]);
-	for(timovr = 0;timovr < 200;timovr++) {
-		sl8Write(num, SL11H_HOSTCTLREG, (data[USB_TOGGLE] == 0) ? DATA0_RD : DATA1_RD);
-		waitus(200);
-		while((sl8Read(num, SL11H_INTSTATREG) & SL11H_INTMASK_XFERDONE) == 0);
-		pktstat = sl8Read(num, SL11H_PKTSTATREG);
-		if(!(pktstat & SL11H_STATMASK_NAK)) break;
+	if(iSize < 0){
+		return 0;
 	}
-	if(pktstat & SL11H_STATMASK_ACK) sl8BufRead(num, 0x10, data, size);
-	ret = 0;
-	if(pktstat & SL11H_STATMASK_ACK) ret |= USB_ACK;
-	if(pktstat & SL11H_STATMASK_NAK) ret |= USB_NAK;
-	if(pktstat & SL11H_STATMASK_STALL) ret |= USB_STALL;
-	return ret;
+	sl8Write(SL11H_BUFADDRREG, 0x10);
+	sl8Write(SL11H_BUFLNTHREG, iSize);
+	sl8Write(SL11H_DEVADDRREG, s_sl8.addr);
+	sl8Write(SL11H_PIDEPREG, PID_IN | pcBuf[USB_EP]);
+
+	for(timovr = 0;timovr < 200;timovr++){
+		sl8Write(SL11H_HOSTCTLREG, (pcBuf[USB_TOGGLE] == 0) ? DATA0_RD : DATA1_RD);
+		waitus(200);
+
+		while((sl8Read(SL11H_INTSTATREG) & SL11H_INTMASK_XFERDONE) == 0){
+			//do nothing
+		}
+
+		cPktStat= sl8Read(SL11H_PKTSTATREG);
+		if(!(cPktStat & SL11H_STATMASK_NAK)){
+			break;
+		}
+	}
+
+	if(cPktStat & SL11H_STATMASK_ACK){
+		sl8BufRead(0x10, pcBuf, iSize);
+	}
+	iRet = 0;
+	if(cPktStat & SL11H_STATMASK_ACK){
+		iRet |= USB_ACK;
+	}
+	if(cPktStat & SL11H_STATMASK_NAK){
+		iRet |= USB_NAK;
+	}
+	if(cPktStat & SL11H_STATMASK_STALL){
+		iRet |= USB_STALL;
+	}
+	return iRet;
 }
 
 /*****************************************************************************
@@ -387,11 +460,14 @@ int read_sl811(int num, char* data, int size) {
 	ARGUMENT	: T.B.D.
 	RETURN		: -
 	NOTE		: sl8Seekにする
-	UPDATED		: 2014-06-26
+	UPDATED		: 2015-12-18
 *****************************************************************************/
-int seek_sl811(int num, int position) {
-	if(num >= SL_NUM) return -1;
-	sl811[num].addr = position;
+int seek_sl811(int num, int iPos)
+{
+	if(num >= SL_NUM){
+		return -1;
+	}
+	s_sl8.addr = iPos;
 	return 0;
 }
 
@@ -400,42 +476,64 @@ int seek_sl811(int num, int position) {
 	ARGUMENT	: T.B.D.
 	RETURN		: -
 	NOTE		: -
-	UPDATED		: 2014-06-26
+	UPDATED		: 2015-12-18
 *****************************************************************************/
-int ioctl_sl811(int num, long data, int op) {
-	static char	getdesc[8] = {0x80, 0x06, 0, 1, 0, 0, 64, 0};
-	static char	setaddr[8] = {0x00, 0x05, 2, 0, 0, 0, 0, 0};
-	char		buf[10];
-	int		ret;
+int ioctl_sl811(int num, long lData, int op)
+{
+	static char	getdesc[8] ={0x80, 0x06, 0, 1, 0, 0, 64, 0};
+	static char	setaddr[8] ={0x00, 0x05, 2, 0, 0, 0, 0, 0};
+	char		pcBuf[10];
+	int			iRet;
 
-	if(num >= SL_NUM) return -1;
-	ret = 0;
-	switch(op) {
-	case USB_RESET:
-		ret = -1;
-		sl811[num].addr = 0;
-		if(USBReset(num) != 0) break;
-		if((write_setup(num, getdesc) & USB_ACK) == 0) break;
-		buf[USB_EP] = 0, buf[USB_TOGGLE] = 1;
-		if((read_sl811(num, buf, 8) & USB_ACK) == 0) break;
-		buf[USB_EP] = 0, buf[USB_TOGGLE] = 1;
-		if((write_sl811(num, buf, 2) & USB_ACK) == 0) break;
-		if((write_setup(num, setaddr) & USB_ACK) == 0) break;
-		buf[USB_EP] = 0, buf[USB_TOGGLE] = 1;
-		if((read_sl811(num, buf, 0) & USB_ACK) == 0) break;
-		sl811[num].addr = data;
-		ret = buf[7];
-		break;
-	case USB_GETSPEED:
-		ret = sl811[num].speed;
-		break;
-	case USB_SETUP:
-		ret = write_setup(num, (char*)data);
-		break;
-	default:
-		ret = -1;
+	if(num >= SL_NUM){
+		return -1;
 	}
-	return ret;
+
+	iRet = 0;
+	switch(op){
+	case USB_RESET:
+		iRet = -1;
+		s_sl8.addr = 0;
+		if(sl8Reset() != 0){
+			break;
+		}
+		if((write_setup(getdesc) & USB_ACK) == 0){
+			break;
+		}
+		pcBuf[USB_EP] = 0, pcBuf[USB_TOGGLE] = 1;
+		if((read_sl811(num, pcBuf, 8) & USB_ACK) == 0){
+			break;
+		}
+		pcBuf[USB_EP] = 0, pcBuf[USB_TOGGLE] = 1;
+		if((write_sl811(num, pcBuf, 2) & USB_ACK) == 0){
+			break;
+		}
+		if((write_setup(setaddr) & USB_ACK) == 0){
+			break;
+		}
+		pcBuf[USB_EP] = 0, pcBuf[USB_TOGGLE] = 1;
+		if((read_sl811(num, pcBuf, 0) & USB_ACK) == 0){
+			break;
+		}
+
+		s_sl8.addr = lData;
+		iRet = pcBuf[7];
+		break;
+
+	case USB_GETSPEED:
+		iRet = s_sl8.speed;
+		break;
+
+	case USB_SETUP:
+		iRet = write_setup((char*)lData);
+		break;
+
+	default:
+		iRet = -1;
+	}
+
+	return iRet;
 }
 
 /***** End Of File *****/
+

@@ -25,13 +25,6 @@
 /*****************************************************************************
 	型定義、構造体定義
 *****************************************************************************/
-typedef struct {
-	volatile char	*addr_reg;
-	volatile char	*data_reg;
-	char			speed;
-	char			addr;
-	char			cDummy[6];
-} SL811Info;
 
 /*****************************************************************************
 	外部変数
@@ -56,7 +49,8 @@ typedef struct {
 	NOTE		: -
 	UPDATED		: 2014-06-26
 *****************************************************************************/
-void get_desc(int num, short type, char *data, int datasize, int epsize, char index, short lang) {
+void get_desc(int num, short type, char *data, int datasize, int epsize, char index, short lang)
+{
 	SetupPKG	command;
 	char		toggle, buf[2];
 //	int		i, remain, size, offset;
@@ -82,9 +76,11 @@ void get_desc(int num, short type, char *data, int datasize, int epsize, char in
 			data[offset + USB_TOGGLE] = toggle;
 			read_sl811(num, &data[offset], size);
 		}
-		if(offset == 0 && data[1] != CONFIG_TYPE) remain = (int)data[0] & 0xff;
+		if(offset == 0 && data[1] != CONFIG_TYPE){
+			remain = (int)data[0] & 0xff;
+		}
 		toggle = (toggle == 0) ? 1 : 0;
-		offset += size;		
+		offset += size;
 	}
 	buf[USB_EP] = 0;
 	buf[USB_TOGGLE] = 1;
@@ -98,7 +94,8 @@ void get_desc(int num, short type, char *data, int datasize, int epsize, char in
 	NOTE		: -
 	UPDATED		: 2014-06-26
 *****************************************************************************/
-int usb_main(int argc, char** argv) {
+int usb_main(int argc, char** argv)
+{
 	int			num, i, ep, cfgsiz, offset;
 	char		buffer[128], *p;
 	DevDesc		device;

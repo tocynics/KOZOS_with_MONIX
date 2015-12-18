@@ -40,7 +40,7 @@ LOAD command.o
 .softvec        0x00400000        0x0
                 0x00400000                _softvec = .
 
-.text           0x00400100     0x4436
+.text           0x00400100     0x4132
                 0x00400100                _text_top = .
  *(.text)
  .text          0x00400100       0x2e startup.o
@@ -113,79 +113,79 @@ LOAD command.o
                 0x00402c0a                _kzMemInit
                 0x00402c52                _kzAlloc
                 0x00402d26                _kzFree
- .text          0x00402eb8      0xbd8 sl811.o
-                0x004034de                _sl811Init
-                0x00403580                _write_sl811
-                0x004036de                _read_sl811
-                0x0040386e                _seek_sl811
-                0x004038b6                _ioctl_sl811
- .text          0x00403a90      0x8b2 usb.o
-                0x00403a90                _get_desc
-                0x00403c60                _usb_main
- .text          0x00404342      0x1f4 command.o
-                0x00404430                _command_main
-                0x00404536                _text_btm = .
+ .text          0x00402eb8      0x8d4 sl811.o
+                0x00403312                _sl811Init
+                0x00403372                _write_sl811
+                0x00403486                _read_sl811
+                0x004035ce                _seek_sl811
+                0x00403602                _ioctl_sl811
+ .text          0x0040378c      0x8b2 usb.o
+                0x0040378c                _get_desc
+                0x0040395c                _usb_main
+ .text          0x0040403e      0x1f4 command.o
+                0x0040412c                _command_main
+                0x00404232                _text_btm = .
 
-.rodata         0x00404538      0x19e
-                0x00404538                _rodata_top = .
+.rodata         0x00404234      0x19e
+                0x00404234                _rodata_top = .
  *(.strings)
  *(.rodata)
- .rodata        0x00404538       0x38 main.o
- .rodata        0x00404570       0x54 kozos.o
- .rodata        0x004045c4       0x11 lib.o
- .rodata        0x004045d5        0x8 dram.o
- .rodata        0x004045dd       0xd9 usb.o
- .rodata        0x004046b6       0x20 command.o
+ .rodata        0x00404234       0x38 main.o
+ .rodata        0x0040426c       0x54 kozos.o
+ .rodata        0x004042c0       0x11 lib.o
+ .rodata        0x004042d1        0x8 dram.o
+ .rodata        0x004042d9       0xd9 usb.o
+ .rodata        0x004043b2       0x20 command.o
  *(.rodata.*)
-                0x004046d6                _rodata_btm = .
+                0x004043d2                _rodata_btm = .
 
-.data           0x004046d8       0x3c
-                0x004046d8                _data_top = .
+.data           0x004043d4       0x3c
+                0x004043d4                _data_top = .
  *(.data)
- .data          0x004046d8        0x0 startup.o
- .data          0x004046d8        0x0 main.o
- .data          0x004046d8        0x4 kozos.o
- .data          0x004046dc        0x0 syscall.o
- .data          0x004046dc        0x0 consdrv.o
- .data          0x004046dc        0x0 lib.o
- .data          0x004046dc        0xc serial.o
-                0x004046dc                _s_pSciRegs
- .data          0x004046e8        0x0 interrupt.o
- .data          0x004046e8        0x0 dram.o
- .data          0x004046e8       0x1c memory.o
- .data          0x00404704       0x10 sl811.o
- .data          0x00404714        0x0 usb.o
- .data          0x00404714        0x0 command.o
-                0x00404714                _data_btm = .
+ .data          0x004043d4        0x0 startup.o
+ .data          0x004043d4        0x0 main.o
+ .data          0x004043d4        0x4 kozos.o
+ .data          0x004043d8        0x0 syscall.o
+ .data          0x004043d8        0x0 consdrv.o
+ .data          0x004043d8        0x0 lib.o
+ .data          0x004043d8        0xc serial.o
+                0x004043d8                _s_pSciRegs
+ .data          0x004043e4        0x0 interrupt.o
+ .data          0x004043e4        0x0 dram.o
+ .data          0x004043e4       0x1c memory.o
+ .data          0x00404400       0x10 sl811.o
+ .data          0x00404410        0x0 usb.o
+ .data          0x00404410        0x0 command.o
+                0x00404410                _data_btm = .
 
-.bss            0x00404714      0x274
-                0x00404714                _bss_top = .
+.bss            0x00404410      0x270
+                0x00404410                _bss_top = .
  *(.bss)
- .bss           0x00404714        0x0 startup.o
- .bss           0x00404714        0x0 main.o
- .bss           0x00404714      0x230 kozos.o
- .bss           0x00404944        0x0 syscall.o
- .bss           0x00404944       0x20 consdrv.o
- .bss           0x00404964        0x0 lib.o
- .bss           0x00404964        0x0 serial.o
- .bss           0x00404964        0x0 interrupt.o
- .bss           0x00404964        0x0 dram.o
- .bss           0x00404964        0x0 memory.o
- .bss           0x00404964       0x10 sl811.o
- .bss           0x00404974        0x0 usb.o
- .bss           0x00404974        0x4 command.o
+ .bss           0x00404410        0x0 startup.o
+ .bss           0x00404410        0x0 main.o
+ .bss           0x00404410      0x230 kozos.o
+ .bss           0x00404640        0x0 syscall.o
+ .bss           0x00404640       0x20 consdrv.o
+ .bss           0x00404660        0x0 lib.o
+ .bss           0x00404660        0x0 serial.o
+ .bss           0x00404660        0x0 interrupt.o
+ .bss           0x00404660        0x0 dram.o
+ .bss           0x00404660        0x0 memory.o
+ .bss           0x00404660       0x10 sl811.o
+ .bss           0x00404670        0x0 usb.o
+ .bss           0x00404670        0x0 command.o
  *(COMMON)
- COMMON         0x00404978       0x10 main.o
-                0x00404978                _test09_3_id
-                0x0040497c                _test09_2_id
-                0x00404980                _ppcOsEntryFp
-                0x00404984                _test09_1_id
-                0x00404988                _bss_btm = .
-                0x00404988                . = ALIGN (0x4)
-                0x00404988                _end = .
+ COMMON         0x00404670       0x10 main.o
+                0x00404670                _test09_3_id
+                0x00404674                _test09_2_id
+                0x00404678                _ppcOsEntryFp
+                0x0040467c                _test09_1_id
+                0x00404680                _bss_btm = .
+                0x00404680                . = ALIGN (0x4)
+                0x00404680                _end = .
 
-.freearea       0x00404988        0x0
-                0x00404988                _freearea = .
+.freearea       0x00404680        0x0
+                0x00404680                _freearea = .
 
 .userstack      0x00500000        0x0
                 0x00500000                _userstack = .

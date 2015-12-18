@@ -28,10 +28,10 @@
 /*****************************************************************************
 	プロトタイプ宣言
 *****************************************************************************/
-int write_sl811(int num, char* data, int size);
-int read_sl811(int num, char* data, int size);
-int seek_sl811(int num, int position);
-int ioctl_sl811(int num, long data, int op);
+int write_sl811(int num, char* pcBuf, int iSize);
+int read_sl811(int num, char* pcBuf, int iSize);
+int seek_sl811(int num, int iPos);
+int ioctl_sl811(int num, long lBuf, int op);
 int sl811Init(void);
 
 /*****************************************************************************

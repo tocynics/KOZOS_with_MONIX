@@ -56,7 +56,7 @@ os				:
 .PHONY:	os_image
 os_image		:
 	@echo "----- I make up koz os. -----"
-	cd $(OS_PATH); make image
+	cd $(OS_PATH); make image;
 
 .PHONY:	os_clean
 os_clean		:
@@ -77,7 +77,7 @@ monix			:
 .PHONY:	monix_image
 monix_image		:
 	@echo "----- I make up monix. -----"
-	cd $(MONIX_PATH); make image
+	cd $(MONIX_PATH); make image;
 
 .PHONY:	monix_clean
 monix_clean		:
