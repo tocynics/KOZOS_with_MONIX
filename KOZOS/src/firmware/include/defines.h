@@ -37,14 +37,14 @@
 
 #define	K_ERR			(-1)
 
-#define	BIT0	(1 << 0)
-#define	BIT1	(1 << 1)
-#define	BIT2	(1 << 2)
-#define	BIT3	(1 << 3)
-#define	BIT4	(1 << 4)
-#define	BIT5	(1 << 5)
-#define	BIT6	(1 << 6)
-#define	BIT7	(1 << 7)
+#define	BIT0	(0x01)
+#define	BIT1	(0x02)
+#define	BIT2	(0x04)
+#define	BIT3	(0x08)
+#define	BIT4	(0x10)
+#define	BIT5	(0x20)
+#define	BIT6	(0x40)
+#define	BIT7	(0x80)
 
 
 /*****************************************************************************

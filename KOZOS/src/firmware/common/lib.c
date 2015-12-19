@@ -467,7 +467,8 @@ void waitms(int ms) {
 	volatile int	a, b;
 
 	for(a = 0;a < ms;a++) {
-		for(b = 0;b < 2000;b++);
+		//for(b = 0;b < 2000;b++);
+		for(b = 0;b < 2500;b++);
 	}
 }
 

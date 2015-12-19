@@ -127,6 +127,9 @@ int command_main(int argc, char** argv)
 
 			((void (*)())ulAddr)();
 		}
+		else if(strcmp(pcBuf, "reset") == TRUE){
+			*(int*)0 = 1;
+		}
 		else{
 			sendWrite("unknown.\n");
 		}

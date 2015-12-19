@@ -33,6 +33,8 @@ int read_sl811(int num, char* pcBuf, int iSize);
 int seek_sl811(int num, int iPos);
 int ioctl_sl811(int num, long lBuf, int op);
 int sl811Init(void);
+int sl811Reset(long lData);
+int sl811Setup(char* pcBuf);
 
 /*****************************************************************************
 	ŠO•”•Ï” 

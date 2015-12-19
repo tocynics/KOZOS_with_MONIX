@@ -61,7 +61,8 @@ void get_desc(int num, short type, char *data, int datasize, int epsize, char in
 	command.wValue = htole16((type << 8) | index);
 	command.wIndex = lang;
 	command.wLength = htole16(datasize);
-	ioctl_sl811(num, (long)&command, USB_SETUP);
+//	ioctl_sl811(num, (long)&command, USB_SETUP);
+	sl811Setup((char*)&command);
 	offset = 0;
 	toggle = 1;
 	buf[USB_TOGGLE] = 1;
@@ -113,7 +114,8 @@ int usb_main(int argc, char** argv)
 		return -1;
 	}
 
-	epsize = ioctl_sl811(num, 2, USB_RESET);
+//	epsize = ioctl_sl811(num, 2, USB_RESET);
+	epsize = sl811Reset(2);
 	if(epsize == -1) {
 		puts("Device not found!\n");
 		return -2;
